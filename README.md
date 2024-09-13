@@ -1,13 +1,15 @@
 ChitChat
 
 
+![Chit Chat (1024 x 1024 px)-2](https://github.com/user-attachments/assets/c704768f-457f-45da-8e09-43b68682c2ff)
 
 
 
 
 
 
-ChitChat is an advanced messaging application developed utilizing SwiftUI for the user interface and Firebase, Firebase Authentication, as well as other Firebase services for backend services. This application supports user account management, real-time messaging, and comprehensive user profile management. It incorporates key functionalities such as user authentication, profile customization, message persistence, user search capabilities, and real-time communication.
+
+ChitChat is an advanced messaging application developed utilizing SwiftUI for the user interface and Firebase, Firebase Authentication, as well as other Firebase services for backend services. This application supports user account management, real-time messaging, and comprehensive user profile management. It incorporates key functionalities such as user authentication, profile customization, message persistence, time tracking, user search capabilities, and real-time communication.
 
 Features:
 
@@ -21,6 +23,7 @@ User Search: Allows users to query and locate other users by email address, faci
 
 
 
+
 Multithreading and Concurrency Management:
 
 Background Processing: Employs concurrent background threads for operations such as retrieving user information from Firestore and managing image uploads to Firebase Storage, thus avoiding main thread congestion and ensuring smooth application performance.
@@ -31,6 +34,7 @@ Dispatch Queues: Leverages GCD (Grand Central Dispatch) to allocate tasks to app
 
 
 And More!!!
+
 
 
 
