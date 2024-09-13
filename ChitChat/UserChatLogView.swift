@@ -244,7 +244,7 @@ struct UserChatLogView: View {
                         .padding(.horizontal, 12)
                         .padding(.vertical, 7)
                         .background(FirebaseManager.shared.auth
-                            .currentUser?.uid ?? "" == messageDocument.fromUserId ? Color.blue: Color(white: 0.85))
+                            .currentUser?.uid ?? "" == messageDocument.fromUserId ? Color.yellow: Color(white: 0.85))
                         .cornerRadius(20)
                         
                         if FirebaseManager.shared.auth.currentUser?.uid ?? "" != messageDocument.fromUserId {

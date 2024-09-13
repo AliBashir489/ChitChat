@@ -53,7 +53,7 @@ struct NewMessageView: View {
                         .cornerRadius(10)
                         .overlay(
                             RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.black, lineWidth: 1)
+                                .stroke(Color.yellow, lineWidth: 3)
                         )
                         .padding(12)
 
@@ -68,7 +68,7 @@ struct NewMessageView: View {
                     }) {
                         Image(systemName: "magnifyingglass")
                             .padding(10)
-                            .background(Color.blue)
+                            .background(Color.yellow)
                             .foregroundColor(.white)
                             .cornerRadius(100)
                     }
