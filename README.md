@@ -1,12 +1,6 @@
 ChitChat
 
 
-![Chit Chat (1024 x 1024 px)-2](https://github.com/user-attachments/assets/c704768f-457f-45da-8e09-43b68682c2ff)
-
-
-
-
-
 
 
 ChitChat is an advanced messaging application developed utilizing SwiftUI for the user interface and Firebase, Firebase Authentication, as well as other Firebase services for backend services. This application supports user account management, real-time messaging, and comprehensive user profile management. It incorporates key functionalities such as user authentication, profile customization, message persistence, time tracking, user search capabilities, and real-time communication.
@@ -39,24 +33,11 @@ And More!!!
 
 Check it out!
 
-
-
-
-
-
-![IMG_3350](https://github.com/user-attachments/assets/83891692-2a7a-4225-bbec-e8e00aaa7a07)
-![IMG_3351](https://github.com/user-attachments/assets/80a41e0b-fae4-4b03-a1c3-901492a69392)
-![IMG_3352](https://github.com/user-attachments/assets/7be6af25-cece-4d6b-8fc8-ce2f512e0ded)
-![IMG_3353](https://github.com/user-attachments/assets/18c0a2dc-5145-4ebf-af4f-82c9f4f5366a)
-![IMG_3354](https://github.com/user-attachments/assets/97daae1d-86a7-451c-bc5c-44a8990b7860)
-![Screenshot 2024-09-14 at 6 58 45 PM](https://github.com/user-attachments/assets/d3d5def8-ffed-47a7-b688-ebaec51f6037)
-![IMG_3362](https://github.com/user-attachments/assets/ce16927e-6e5a-4e1f-b4fd-4a9b2558c3e3)
-![IMG_3363](https://github.com/user-attachments/assets/c305b0f7-c1e0-4d57-9643-2e5c38a82e8c)
-
-
-
-
-
-
-
-
+![IMG_3350PNG](https://github.com/user-attachments/assets/f9f72677-a44d-4d79-b12a-710e9ec1d955)
+![IMG_3351PNG](https://github.com/user-attachments/assets/2887a6b5-0f05-4aa7-82f3-37a29bb80d6c)
+![IMG_3352PNG](https://github.com/user-attachments/assets/e9782f26-65e3-4873-ab31-c4ca73529958)
+![IMG_3353PNG](https://github.com/user-attachments/assets/228c23e2-e939-4bcf-8e0d-4e6b678e4cfa)
+![IMG_3354PNG](https://github.com/user-attachments/assets/4c1f4ac3-1952-4fd7-ba4a-2b10d0777465)
+![IMG_3362PNG](https://github.com/user-attachments/assets/8d22cf49-41cd-4bc5-a7e1-7ed762566b74)
+![IMG_3363PNG](https://github.com/user-attachments/assets/cc45953c-1d1f-4577-91ba-cc07c29540f4)
+![Chit Chat 1024 x 1024 px-2](https://github.com/user-attachments/assets/0cb412f1-0c01-4c92-8153-5ab5254335e9)
