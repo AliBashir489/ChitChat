@@ -32,12 +32,26 @@ Asynchronous Real-Time Updates: Utilizes asynchronous techniques to handle real-
 
 Dispatch Queues: Leverages GCD (Grand Central Dispatch) to allocate tasks to appropriate dispatch queues, thereby ensuring seamless UI performance and preventing potential UI thread blocking.
 
+Multithreading capabilities increased performance and efficiency of this application by more than 100%
+
 
 And More!!!
 
+Check it out!
 
 
 
+
+
+
+![IMG_3350](https://github.com/user-attachments/assets/83891692-2a7a-4225-bbec-e8e00aaa7a07)
+![IMG_3351](https://github.com/user-attachments/assets/80a41e0b-fae4-4b03-a1c3-901492a69392)
+![IMG_3352](https://github.com/user-attachments/assets/7be6af25-cece-4d6b-8fc8-ce2f512e0ded)
+![IMG_3353](https://github.com/user-attachments/assets/18c0a2dc-5145-4ebf-af4f-82c9f4f5366a)
+![IMG_3354](https://github.com/user-attachments/assets/97daae1d-86a7-451c-bc5c-44a8990b7860)
+![Screenshot 2024-09-14 at 6 58 45 PM](https://github.com/user-attachments/assets/d3d5def8-ffed-47a7-b688-ebaec51f6037)
+![IMG_3362](https://github.com/user-attachments/assets/ce16927e-6e5a-4e1f-b4fd-4a9b2558c3e3)
+![IMG_3363](https://github.com/user-attachments/assets/c305b0f7-c1e0-4d57-9643-2e5c38a82e8c)
 
 
 
