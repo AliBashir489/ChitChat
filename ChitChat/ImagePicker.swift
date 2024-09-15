@@ -11,14 +11,14 @@ struct ImagePicker: UIViewControllerRepresentable {
         picker.delegate = context.coordinator
         picker.sourceType = .photoLibrary
         
-        // Set the presentation style to full screen
+       
         picker.modalPresentationStyle = .fullScreen
         
         return picker
     }
     
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
-        // No need to update anything here
+       
     }
     
     func makeCoordinator() -> Coordinator {

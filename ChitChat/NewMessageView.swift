@@ -9,12 +9,16 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 
-
-
-
 struct NewMessageView: View {
     
+    @Environment(\.presentationMode) var presentationMode
+    let didSelectNewUser: (User) -> ()
+    @State var users = [User]()
+    @State var searchText = ""
+    @State var showUsers = false
+    @State var searchingUser = ""
     
+    //------------------------------------------------------------------------------------------------------------------------------------------------
     
     private func getAllUsers(){
         FirebaseManager.shared.fireStore.collection("users").getDocuments { documentsSnapshot, error in
@@ -22,7 +26,7 @@ struct NewMessageView: View {
                 print("Could not fetch users \(error)")
                 return
             }
-             
+            
             documentsSnapshot?.documents.forEach({snapshot in
                 let data = snapshot.data()
                 if FirebaseManager.shared.auth.currentUser?.uid != data["uid"] as? String ?? "" {
@@ -32,14 +36,7 @@ struct NewMessageView: View {
         }
     }
     
-    
-    @Environment(\.presentationMode) var presentationMode
-    let didSelectNewUser: (User) -> ()
-    @State var users = [User]()
-    @State var searchText = ""
-    @State var showUsers = false
-    @State var searchingUser = ""
-   
+    //------------------------------------------------------------------------------------------------------------------------------------------------
     
     var body: some View {
         NavigationView {
@@ -48,7 +45,7 @@ struct NewMessageView: View {
                 HStack {
                     TextField("Search...", text: $searchText)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                        
+                    
                         .background(Color.gray.opacity(0.2))
                         .cornerRadius(10)
                         .overlay(
@@ -56,7 +53,7 @@ struct NewMessageView: View {
                                 .stroke(Color.yellow, lineWidth: 3)
                         )
                         .padding(12)
-
+                    
                     Button(action: {
                         if searchText == ""{
                             return
@@ -74,8 +71,7 @@ struct NewMessageView: View {
                     }
                 }
                 .padding()
-
-               Spacer()
+                Spacer()
                 
                 
                 if showUsers {
@@ -86,8 +82,8 @@ struct NewMessageView: View {
                                 didSelectNewUser(user)
                                 
                                 presentationMode.wrappedValue.dismiss()
-
-                            
+                                
+                                
                                 
                             } label: {
                                 HStack{
@@ -101,21 +97,19 @@ struct NewMessageView: View {
                                             .stroke(Color(.yellow), lineWidth: 2)
                                         )
                                         .shadow(radius: 5)
-                                   
+                                    
                                     Text(user.email)
                                         .foregroundColor(.black)
                                         .fontWeight(.semibold)
                                     Spacer()
                                 }.padding(.horizontal)
-                        }
+                            }
                         }
                     }
-                    
                 }
                 
-                    
-                }.navigationTitle("New ChitChat")
-                
+            }.navigationTitle("New ChitChat")
+            
                 .toolbar {
                     ToolbarItemGroup(placement: .navigationBarLeading){
                         Button {
@@ -123,16 +117,12 @@ struct NewMessageView: View {
                         } label: {
                             Text("Cancel")
                         }
-                        
                     }
                 }
         }
         .onAppear{
             getAllUsers()
         }
-        
-        
-        
     }
 }
 

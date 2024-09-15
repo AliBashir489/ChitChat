@@ -17,25 +17,20 @@ import FirebaseFirestore
 struct LoginView: View {
     
     let loginProcessComplete: () -> ()
- 
     
     @State var isLoginMode = false;
     @State var email = ""
     @State var password = ""
     @State var showImagePicker = false
+    @State var image: UIImage?
+    @State var loginStatusMessage = ""
     
-    
+    //------------------------------------------------------------------------------------------------------------------------------------------------
     
     var body: some View {
         NavigationView{
-            
-            
-
             ScrollView{
-                
                 VStack(spacing: 16){
-                    
-                   
                     
                     Picker(selection: $isLoginMode, label: Text("Login Picker")) {
                         Text("Login")
@@ -44,9 +39,6 @@ struct LoginView: View {
                             .tag(false)
                     }
                     .pickerStyle(SegmentedPickerStyle())
-                    
-                    
-                    
                     
                     if !isLoginMode{
                         Button(action: {showImagePicker.toggle()},
@@ -62,9 +54,6 @@ struct LoginView: View {
                                         RoundedRectangle(cornerRadius: 100)
                                             .stroke(Color.black, lineWidth: 4) // Black border with 4px thickness
                                     )
-                                
-                                
-                                
                             }
                             else{
                                 Image(systemName: "person.crop.circle.fill.badge.plus")
@@ -74,18 +63,14 @@ struct LoginView: View {
                             }
                             
                         })
-                    
+                        
                     }
-                    
-                    
-//
-                    
                     
                     Group{
                         TextField("Email", text: $email)
                             .keyboardType(.emailAddress)
                             .autocapitalization(.none)
-     
+                        
                         SecureField("Password", text: $password)
                         
                     }
@@ -95,12 +80,8 @@ struct LoginView: View {
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
                             .stroke(Color.black, lineWidth: 2)
-                            
-                            
                     )
-                    
-                    
-                    
+                      
                     Button(action: {handleAction()}, label: {
                         HStack{
                             Spacer()
@@ -108,7 +89,7 @@ struct LoginView: View {
                                 .foregroundColor(.white)
                                 .padding(.vertical, 10)
                                 .font(.system(size: 14, weight: .semibold))
-                                
+                            
                             Spacer()
                         }
                         .background(Color.black)
@@ -118,26 +99,18 @@ struct LoginView: View {
                     if self.loginStatusMessage != "" {
                         Text(self.loginStatusMessage)
                             .foregroundColor(.black)
-                        .fontWeight(.semibold)
+                            .fontWeight(.semibold)
                     }
-                    
-                    
                 }
                 .padding()
-                
-                
-                
-                
                 
             }
             .navigationTitle(isLoginMode ? "Welcome Back" : "Create Account")
             .background(
-                        Image("Chit Chat Login") // Your image name from assets
-                            .resizable()
-                            .edgesIgnoringSafeArea(.all) // Ignore safe area if needed
-                        
-                            
-                    )
+                Image("Chit Chat Login") // Your image name from assets
+                    .resizable()
+                    .edgesIgnoringSafeArea(.all) // Ignore safe area if needed
+            )
             
         }
         .navigationViewStyle(StackNavigationViewStyle())
@@ -148,8 +121,7 @@ struct LoginView: View {
     
     
     
-    
-    @State var image: UIImage?
+    //----------------------------------------------------------------------------------------------------
     
     private func handleAction(){
         if isLoginMode{
@@ -160,8 +132,9 @@ struct LoginView: View {
         }
     }
     
-    @State var loginStatusMessage = ""
     
+    //----------------------------------------------------------------------------------------------------
+
     
     private func loginUser(){
         FirebaseManager.shared.auth.signIn(withEmail: email, password: password){
@@ -174,11 +147,14 @@ struct LoginView: View {
             
             print("Successfully logged in as user: \(result?.user.uid ?? "")")
             self.loginStatusMessage = ""
-
+            
             self.loginProcessComplete()
-                
+            
         }
     }
+    
+    //----------------------------------------------------------------------------------------------------
+
     
     private func createNewAccount(){
         
@@ -199,14 +175,15 @@ struct LoginView: View {
             self.loginStatusMessage = "Creating user..."
             
             
-                self.saveImageToStorage()
-
-            
-                
-
-            
+            self.saveImageToStorage()
+    
         }
     }
+    
+    
+    
+    //----------------------------------------------------------------------------------------------------
+
     
     private func saveImageToStorage(){
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid
@@ -228,19 +205,17 @@ struct LoginView: View {
                 self.loginStatusMessage = "Saving profile image..."
                 
                 guard let url = url else {return}
-        
+                
                 storeUserInformation(imageProfileUrl: url)
                 self.loginProcessComplete()
                 
             }
-            
-            
-            
-            
-            
-            
         }
     }
+    
+    
+    //----------------------------------------------------------------------------------------------------
+
     
     private func storeUserInformation(imageProfileUrl: URL){
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
@@ -258,9 +233,7 @@ struct LoginView: View {
                 self.loginStatusMessage = "Logging in..."
                 print("Successful")
             }
-        
     }
-    
 }
 
 #Preview {

@@ -37,7 +37,7 @@ class MainMessagesViewModel : ObservableObject {
     @Published var errorMessage = ""
     @Published var currentUser: User?
     @Published var isUserCurrentlyLoggedOut = true
-    
+    private var listenerRegistration: ListenerRegistration?
     
     //----------------------------------------------------------------------------------------------------------------------
     
@@ -54,30 +54,32 @@ class MainMessagesViewModel : ObservableObject {
     
     func fetchRecentMessages() {
         guard let currentUserUid = FirebaseManager.shared.auth.currentUser?.uid else { return }
-
-        DispatchQueue.global(qos: .background).async {
-            FirebaseManager.shared.fireStore.collection("recentMessages").document(currentUserUid).collection("recents").addSnapshotListener { QuerySnapshot, error in
-                if let error = error {
-                    DispatchQueue.main.async {
-                        self.errorMessage = error.localizedDescription
-                    }
-                    return
+        
+        
+        listenerRegistration?.remove()
+        self.userRecentMessages.removeAll()
+        
+        listenerRegistration = FirebaseManager.shared.fireStore.collection("recentMessages").document(currentUserUid).collection("recents").order(by: "time").addSnapshotListener { QuerySnapshot, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    self.errorMessage = error.localizedDescription
                 }
-
-                QuerySnapshot?.documentChanges.forEach { DocumentChange in
-                    DispatchQueue.main.async {
-                        if let index = self.userRecentMessages.firstIndex(where: { recentMessage in
-                            return recentMessage.documentId == DocumentChange.document.documentID
-                        }) {
-                            self.userRecentMessages.remove(at: index)
-                        }
-                        self.userRecentMessages.insert(.init(documentId: DocumentChange.document.documentID, data: DocumentChange.document.data()), at: 0)
-                    }
+                return
+            }
+            
+            QuerySnapshot?.documentChanges.forEach { DocumentChange in
+                if let index = self.userRecentMessages.firstIndex(where: { recentMessage in
+                    return recentMessage.documentId == DocumentChange.document.documentID
+                }) {
+                    self.userRecentMessages.remove(at: index)
                 }
+                self.userRecentMessages.insert(.init(documentId: DocumentChange.document.documentID, data: DocumentChange.document.data()), at: 0)
+                
             }
         }
+        
     }
-
+    
     
     
     //---------------------------------------------------------------------------------------------------------------
@@ -91,7 +93,7 @@ class MainMessagesViewModel : ObservableObject {
             }
             return
         }
-
+        
         DispatchQueue.global(qos: .background).async {
             FirebaseManager.shared.fireStore.collection("users").document(uid).getDocument { snapshot, error in
                 if let error = error {
@@ -106,7 +108,7 @@ class MainMessagesViewModel : ObservableObject {
                     }
                     return
                 }
-
+                
                 DispatchQueue.main.async {
                     self.currentUser = .init(data: userData)
                     FirebaseManager.shared.currentUserEmail = self.currentUser?.email ?? ""
@@ -115,7 +117,7 @@ class MainMessagesViewModel : ObservableObject {
             }
         }
     }
-
+    
     
     
     //---------------------------------------------------------------------------------------------------------------
@@ -128,12 +130,8 @@ class MainMessagesViewModel : ObservableObject {
         FirebaseManager.shared.currentUserEmail = nil
         FirebaseManager.shared.currentUserProfileImageUrl = nil
         try? FirebaseManager.shared.auth.signOut()
-        
-        
     }
-    
 }
-
 
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -148,7 +146,7 @@ struct MainMessageView: View {
     @State var showLogoutOption = false
     @ObservedObject private var userManager = MainMessagesViewModel()
     @State var showUserChatLogView = false
-    
+    private var userChatLogViewManager = UserChatLogViewManager(toUser: nil)
     
     var body: some View {
         
@@ -158,22 +156,22 @@ struct MainMessageView: View {
                 messagesList
                 
                 NavigationLink("", isActive: $showUserChatLogView){
-                    
-                    
-                    UserChatLogView(toUser: user)
+                    UserChatLogView(logViewManager: userChatLogViewManager)
                     
                 }
-                
-                
             }
-            
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
     
-    
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------
+
     
     private var customNavigationBar: some View {
         HStack(spacing: 16) {
+            
+            var username = userManager.currentUser?.email.components(separatedBy: "@").first ?? ""
+            var formattedUsername = username.prefix(1).uppercased() + username.dropFirst()
             
             WebImage(url: URL(string: userManager.currentUser?.profileImageURL ?? ""))
                 .resizable()
@@ -186,10 +184,10 @@ struct MainMessageView: View {
                 )
                 .shadow(radius: 5)
             
-            let username = userManager.currentUser?.email.components(separatedBy: "@").first ?? ""
+
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(username)
+                Text(formattedUsername)
                     .font(.system(size: 24, weight: .bold))
                 
                 HStack {
@@ -204,7 +202,6 @@ struct MainMessageView: View {
             }
             
             Spacer()
-            
             
         }
         .padding()
@@ -230,52 +227,61 @@ struct MainMessageView: View {
         }
     }
     
+    
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------
 
+    
     func calcTime(recentMessageTime: Timestamp) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "h:mm a"
-
-        let now = Date()
         let messageDate = recentMessageTime.dateValue()
+        let now = Date()
         let calendar = Calendar.current
-
-        let components = calendar.dateComponents([.day, .month, .year], from: now)
-        let today = calendar.date(from: components)!
-
-        let isSameDay = calendar.isDate(messageDate, inSameDayAs: today)
-
+        
+        let isSameDay = calendar.isDate(messageDate, inSameDayAs: now)
+        
+        let dateFormatter = DateFormatter()
+        
         if isSameDay {
+            // If it's today, show the time
+            dateFormatter.dateFormat = "h:mm a"
+            return dateFormatter.string(from: messageDate)
+        } else {
+            // Check if the message was sent yesterday
+            let oneDayAgo = calendar.date(byAdding: .day, value: -1, to: now)!
+            if calendar.isDate(messageDate, inSameDayAs: oneDayAgo) {
+                return "Yesterday"
+            }
+            
+            // If it's within the last week, show the day of the week
+            let weekAgo = calendar.date(byAdding: .day, value: -7, to: now)!
+            if messageDate > weekAgo {
+                dateFormatter.dateFormat = "EEEE"
+                return dateFormatter.string(from: messageDate)
+            }
+            
+            // Otherwise, show the full date (MM/dd/yyyy)
+            dateFormatter.dateFormat = "MM/dd/yyyy"
             return dateFormatter.string(from: messageDate)
         }
-
-        let oneDayAgo = calendar.date(byAdding: .day, value: -1, to: today)!
-        if calendar.isDate(messageDate, inSameDayAs: oneDayAgo) {
-            return "Yesterday"
-        }
-
-        let weekAgo = calendar.date(byAdding: .day, value: -7, to: today)!
-        if messageDate > weekAgo {
-            dateFormatter.dateFormat = "EEEE"
-            return dateFormatter.string(from: messageDate)
-        }
-
-        dateFormatter.dateFormat = "MM/dd/yyyy"
-        return dateFormatter.string(from: messageDate)
     }
-
-
+    
+    
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    
     
     private var messagesList: some View {
         
         ScrollView {
             
             Spacer()
-            ForEach(userManager.userRecentMessages) { recentMessageUser in
+            ForEach($userManager.userRecentMessages) { $recentMessageUser in
+                
                 VStack {
                     NavigationLink {
-                        let data = ["uid" : recentMessageUser.userUid, "email": recentMessageUser.userEmail, "profileImageUrl": recentMessageUser.profileImageUrl]
+                        let data = ["uid" : recentMessageUser.userUid, "email": recentMessageUser.userEmail, "profileImageURL": recentMessageUser.profileImageUrl]
                         let toUser = User(data: data)
-                        UserChatLogView(toUser: toUser)
+                        
+                        UserChatLogView(logViewManager: .init(toUser: toUser))
                     } label: {
                         
                         HStack(spacing: 16) {
@@ -292,29 +298,28 @@ struct MainMessageView: View {
                                 .shadow(radius: 2)
                             
                             VStack(alignment: .leading) {
-                                Text(recentMessageUser.userEmail.components(separatedBy: "@").first ?? "")
+                                let username = recentMessageUser.userEmail.components(separatedBy: "@").first ?? ""
+                                let formattedUsername = username.prefix(1).uppercased() + username.dropFirst()
+                                Text(formattedUsername)
                                     .font(.system(size: 14, weight: .bold))
                                     .foregroundColor(Color(.label))
                                 
                                 Text(recentMessageUser.messageText)
                                     .font(.system(size: 14))
                                     .foregroundColor(Color(.darkGray))
-                                    .frame(alignment: .leading)
-                                    
+                                    .lineLimit(2)
+                                    .multilineTextAlignment(.leading)
+                                
                             }
                             
-                            
                             Spacer()
-                            
-                            
+                              
                             Text(calcTime(recentMessageTime: recentMessageUser.time))
                                 .font(.system(size: 14, weight: .semibold))
                         }
                     }
-                        Divider()
-                            .padding(.vertical, 8)
-                    
-                    
+                    Divider()
+                        .padding(.vertical, 8)
                 }
                 .padding(.horizontal)
             }
@@ -323,6 +328,7 @@ struct MainMessageView: View {
             
             HStack {
                 Button {
+                    
                     shouldShowNewMessageView.toggle()
                 } label: {
                     HStack {
@@ -341,9 +347,11 @@ struct MainMessageView: View {
                 }.fullScreenCover(isPresented: $shouldShowNewMessageView) {
                     NewMessageView(didSelectNewUser: {user in
                         self.user = user
+                        self.userChatLogViewManager.toUser = user
+                        self.userChatLogViewManager.fetchAllMessages()
                         showUserChatLogView.toggle()
                     })
-            }
+                }
                 
                 Button {
                     showLogoutOption.toggle()
@@ -366,10 +374,9 @@ struct MainMessageView: View {
                         self.user = user
                         showUserChatLogView.toggle()
                     })
-            }
+                }
                 
             },alignment: .bottom
-            
         )
     }
     
